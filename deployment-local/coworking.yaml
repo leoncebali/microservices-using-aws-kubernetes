@@ -3,7 +3,6 @@ kind: Service
 metadata:
   name: coworking
 spec:
-  # A local environment doesn't generally have a LoadBalancer, so we use NodePort instead.
   type: NodePort
   selector:
     service: coworking
@@ -31,8 +30,7 @@ spec:
     spec:
       containers:
       - name: coworking
-        # Locally hosted docker image
-        image: <DOCKER_IMAGE_NAME>:<IMAGE_TAG>
+        image: <DOCKER_IMAGE_URI_FROM_ECR>
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
