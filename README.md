@@ -31,11 +31,13 @@ For this project, you are a DevOps engineer who will be collaborating with a tea
 #### Check your AWS IAM configuration
 
 Verify your AWS user or role is currently authenticated
+
 ```bash
 aws sts get-caller-identity
 ```
 
 If you have an error you have to configure it properly by executing this command
+
 ```bash
 aws configure
 ```
@@ -43,6 +45,7 @@ aws configure
 #### Create EKS Cluster and Nodes
 
 Here is the command to create cluster named demo-eks and node named demo-node:
+
 <i>For example, we choose as cluster name `demo-eks` and the node name `demo-node`</i> 
 
 ```bash
@@ -57,23 +60,26 @@ eksctl create cluster --name demo-eks --region us-east-1 --nodegroup-name demo-n
 
 
 #### Update the context in the local Kubeconfig file
+
 ```bash
 aws eks --region us-east-1 update-kubeconfig --name demo-eks
 ```
 
 
 ### Setup
-#### Configure a Database
+#### Configure a postgres database
 Set up a Postgres database using a Helm Chart.
 
 1. Install PostgreSQL Helm Chart
+
 ```
 helm install <SERVICE_NAME> <REPO_NAME>/postgresql
 ```
 
-This should set up a Postgre deployment at `<SERVICE_NAME>-postgresql.default.svc.cluster.local` in your Kubernetes cluster. You can verify it by running `kubectl svc`
+This should set up a Postgre deployment at `<SERVICE_NAME>-postgresql.default.svc.cluster.local` in your Kubernetes cluster. You can verify it by running `kubectl get svc`
 
-By default, it will create a username `postgres`. The password can be retrieved with the following command:
+By default, it will create a username `myuser`. The password can be retrieved with the following command:
+
 ```bash
 export POSTGRES_PASSWORD=$(kubectl get secret --namespace default <SERVICE_NAME>-postgresql -o jsonpath="{.data.postgres-password}" | base64 -d)
 
@@ -86,12 +92,14 @@ echo $POSTGRES_PASSWORD
 The database is accessible within the cluster. This means that when you will have some issues connecting to it via your local environment. You can either connect to a pod that has access to the cluster _or_ connect remotely via [`Port Forwarding`](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/)
 
 * Connecting Via Port Forwarding
+
 ```bash
 kubectl port-forward --namespace default svc/<SERVICE_NAME>-postgresql 5432:5432 &
     PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432
 ```
 
 * Connecting Via a Pod
+
 ```bash
 kubectl exec -it <POD_NAME> bash
 PGPASSWORD="<PASSWORD HERE>" psql postgres://postgres@<SERVICE_NAME>:5432/postgres -c <COMMAND_HERE>
@@ -106,33 +114,37 @@ kubectl port-forward --namespace default svc/<SERVICE_NAME> 5432:5432 &
 ```
 
 Here in `db` directory, you will replace <FILE_NAME.sql> in the command above by each one sql filenames and execute
-- ![1_create_tables.sql](db/1_create_tables.sql)
-- ![2_seed_users.sql](db/2_seed_users.sql)
-- ![3_seed_tokens.sql](db/3_seed_tokens.sql)
+- [1_create_tables.sql](db/1_create_tables.sql)
+- [2_seed_users.sql](db/2_seed_users.sql)
+- [3_seed_tokens.sql](db/3_seed_tokens.sql)
 
 #### Running the Analytics Application Locally
 In the `analytics/` directory:
 
 1. Install dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
 2. Run the application (see below regarding environment variables)
+
 ```bash
 <ENV_VARS> python app.py
 ```
 
 There are multiple ways to set environment variables in a command. They can be set per session by running `export KEY=VAL` in the command line or they can be prepended into your command.
 
-* `DB_USERNAME`
-* `DB_PASSWORD`
+* `DB_USERNAME` (defaults to `myuser`)
+* `DB_PASSWORD` (defaults to `mypassword`)
 * `DB_HOST` (defaults to `127.0.0.1`)
 * `DB_PORT` (defaults to `5432`)
-* `DB_NAME` (defaults to `postgres`)
+* `DB_NAME` (defaults to `mydatabase`)
 
+Feel free to change default values
 
 If we set the environment variables by prepending them, it would look like the following:
+
 ```bash
 DB_USERNAME=username_here DB_PASSWORD=password_here python app.py
 ```
@@ -170,9 +182,10 @@ The benefit here is that it's explicitly set. However, note that the `DB_PASSWOR
 ![log events](resources/cloudwatch_log_events.png)
 
 
-### Clean up
+### Cleaning up resources to save on costs
 #### Delete EKS Cluster
-This should delete cluster, nodes and all dependences(or relative resources) it created when we run the creation command
+This should delete cluster, nodes and all dependences (or relative resources) it created when we run the creation command
+
 ```bash
 eksctl delete cluster --name demo-eks --region us-east-1
 ```
