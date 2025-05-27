@@ -30,7 +30,8 @@ spec:
     spec:
       containers:
       - name: coworking
-        image: <DOCKER_IMAGE_URI_FROM_ECR>
+        # Locally hosted docker image
+        image: 845806960839.dkr.ecr.us-east-1.amazonaws.com/coworking-analytics:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -46,11 +47,11 @@ spec:
           timeoutSeconds: 5
         envFrom:
         - configMapRef:
-            name: <NAME OF THE ConfigMap>
+            name: postgres-configmap
         env:
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: <NAME OF THE Secret>
-              key: <THE KEY FROM Secret WHICH has THE ENCODED PASSWORD>
+              name: postgres-secret
+              key: db_password
       restartPolicy: Always
