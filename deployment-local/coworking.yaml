@@ -32,7 +32,7 @@ spec:
       containers:
       - name: coworking
         # Locally hosted docker image
-        image: 845806960839.dkr.ecr.us-east-1.amazonaws.com/coworking-analytics
+        image: 845806960839.dkr.ecr.us-east-1.amazonaws.com/coworking-analytics:latest
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -54,5 +54,5 @@ spec:
           valueFrom:
             secretKeyRef:
               name: postgres-secret
-              key: <THE KEY FROM Secret WHICH has THE ENCODED PASSWORD>
+              key: db_password
       restartPolicy: Always
