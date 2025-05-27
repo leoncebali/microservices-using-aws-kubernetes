@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: postgresql-configmap
+  name: postgres-configmap
 data:
   DB_NAME: "mydatabase"
   DB_USER: "myuser"
@@ -11,7 +11,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: <NAME OF THE Secret>
+  name: postgres-secret
 type: Opaque
 data:
   <THE KEY FROM Secret WHICH has THE ENCODED PASSWORD>: <OUTPUT OF `echo -n 'the password' | base64`>
