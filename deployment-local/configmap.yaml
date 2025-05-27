@@ -14,4 +14,4 @@ metadata:
   name: postgres-secret
 type: Opaque
 data:
-  <THE KEY FROM Secret WHICH has THE ENCODED PASSWORD>: <OUTPUT OF `echo -n 'the password' | base64`>
+  db_password: bXlwYXNzd29yZA==
