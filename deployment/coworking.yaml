@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: coworking
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     service: coworking
   ports:
